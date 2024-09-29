@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
 
 async function dbConnect(dbURL) {
-    await mongoose.connection(dbURL)
+    await mongoose.connect(dbURL)
 }
 
 async function dbDisconnect() {
-    await mongoose.connection.close()
+    await mongoose.disconnect()
 }
 
 export { dbConnect, dbDisconnect }

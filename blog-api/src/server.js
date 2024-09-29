@@ -1,4 +1,4 @@
-import express, { request, response } from "express"
+import express, { application, request, response } from "express"
 import mongoose from "mongoose"
 import dotenv from "dotenv"
 import helmet from "helmet"
@@ -33,25 +33,25 @@ app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 
 // Connecting to MongoDB
-var dbURL = ""
+var DB_URI = ""
 switch (process.env.NODE_ENV) {
     case "test":
-        dbURL = "mongodb://localhost:27017//ExpressBuildAnAPI-test"
+        DB_URI = "mongodb://localhost:27017/BareBonesBlog-test"
         break
     case "development":
-        dbURL = "mongodb://localhost:27017//ExpressBuildAnAPI-dev"
+        DB_URI = "mongodb://localhost:27017/BareBonesBlog-dev"
         break
     case "production":
-        dbURL = process.env.DATABASE_URL
+        DB_URI = process.env.DB_URI
         break
     default:
         console.error("Incorrect JS environment specified, database will not be connected.")
         break
 }
 
-dbConnect(dbURL)
+dbConnect(DB_URI)
     .then(() => {
-        console.log("Databse connected successfully!")
+        console.log("Database connected successfully!")
     })
     .catch(error => {
         console.log(`
@@ -60,6 +60,40 @@ dbConnect(dbURL)
         `)
     })
         
+app.get('/databaseHealth', (req,res) => {
+    let databaseState = mongoose.connection.readyState;
+    let databaseName = mongoose.connection.name;
+    let databaseModels = mongoose.modelNames();
+    let databaseHost = mongoose.connection.host;
+
+    res.json({
+        readyState: databaseState,
+        dbName: databaseName,
+        dbModels: databaseModels,
+        dbHost: databaseHost
+    })
+})
+
+// Not sure if needed
+// app.get('/databaseDump', async (req, res) => {
+//     const dumpContainer = {}
+
+//     // Get the names of all collections in DB
+//     var collections = await mongoose.connection.db.listCollections().toArray()
+//     collections = collections.map((collection) => collection.name)
+
+//     // For each collection, get all their data and add it to the dumpContainer
+//     for (const collectionName of collections) {
+//         let collectionData = await mongoose.connection.db.collection(collectionName).find({}).toArray()
+//         dumpContainer[collectionName] = collectionData
+//     }
+
+//     console.log("Dumping all of this data to the client: \n" + JSON.stringify(dumpContainer, null, " "))
+
+//     res.json({
+//         data: dumpContainer
+//     })
+// })
 
 // Home route
 app.get('/', (req, res) => {
