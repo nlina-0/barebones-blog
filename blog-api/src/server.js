@@ -4,6 +4,7 @@ import dotenv from "dotenv"
 import helmet from "helmet"
 import cors from "cors"
 import { dbConnect, dbDisconnect } from "./database.js"
+import rolesRoutes from "./controllers/RoleRoutes.js"
 
 dotenv.config()
 
@@ -74,26 +75,26 @@ app.get('/databaseHealth', (req,res) => {
     })
 })
 
-// Not sure if needed
-// app.get('/databaseDump', async (req, res) => {
-//     const dumpContainer = {}
+// Database dump to view see all data
+app.get('/databaseDump', async (req, res) => {
+    const dumpContainer = {}
 
-//     // Get the names of all collections in DB
-//     var collections = await mongoose.connection.db.listCollections().toArray()
-//     collections = collections.map((collection) => collection.name)
+    // Get the names of all collections in DB
+    var collections = await mongoose.connection.db.listCollections().toArray()
+    collections = collections.map((collection) => collection.name)
 
-//     // For each collection, get all their data and add it to the dumpContainer
-//     for (const collectionName of collections) {
-//         let collectionData = await mongoose.connection.db.collection(collectionName).find({}).toArray()
-//         dumpContainer[collectionName] = collectionData
-//     }
+    // For each collection, get all their data and add it to the dumpContainer
+    for (const collectionName of collections) {
+        let collectionData = await mongoose.connection.db.collection(collectionName).find({}).toArray()
+        dumpContainer[collectionName] = collectionData
+    }
 
-//     console.log("Dumping all of this data to the client: \n" + JSON.stringify(dumpContainer, null, " "))
+    console.log("Dumping all of this data to the client: \n" + JSON.stringify(dumpContainer, null, 4))
 
-//     res.json({
-//         data: dumpContainer
-//     })
-// })
+    res.json({
+        data: dumpContainer
+    })
+})
 
 // Home route
 app.get('/', (req, res) => {
@@ -101,6 +102,8 @@ app.get('/', (req, res) => {
         message: "Hello world!"
     })
 })
+
+app.use('/roles', rolesRoutes)
 
 // When no valid route is found, 404 handler route
 app.get('*', (req, res) => {
