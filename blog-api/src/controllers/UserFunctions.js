@@ -123,7 +123,7 @@ async function createUser(userDetails) {
 
 async function updateUser(userDetails){
     // Find user, update it, return the updated user data.
-    return await User.findByIdAndUpdate(userDetails.userID, userDetails.updatedData, {returnDocument: 'after'}.exec())
+    return await User.findByIdAndUpdate(userDetails.userID, userDetails.updatedData, {returnDocument: 'after'}).exec()
 }
 
 async function deleteUser(userID) {

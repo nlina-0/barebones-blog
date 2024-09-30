@@ -6,6 +6,7 @@ import cors from "cors"
 import { dbConnect, dbDisconnect } from "./database.js"
 import rolesRoutes from "./controllers/RoleRoutes.js"
 import usersRoutes from "./controllers/UserRoutes.js"
+import postsRoutes from "./controllers/PostRoutes.js"
 
 dotenv.config()
 
@@ -107,6 +108,7 @@ app.get('/', (req, res) => {
 
 app.use('/roles', rolesRoutes)
 app.use('/users', usersRoutes)
+app.use('/posts', postsRoutes)
 
 // When no valid route is found, 404 handler route
 app.get('*', (req, res) => {

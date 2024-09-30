@@ -18,8 +18,33 @@ import {
 
 const router = Router()
 
+// --------------------------------------
+// ----- Middleware
+
+// Validate user email uniqueness
+const uniqueEmailCheck = async (req, res, next) => {
+    let isEmailInUse = await User.exists({email: req.body.email}).exec()
+    if (isEmailInUse) {
+        next(new Error("An account with this email address already exists."))
+    } else {
+        next()
+    }
+}
+
+// If any errors are detected, end the route early
+// and respond with the error message
+const handleErrors = async (error, req, res, next) => {
+    if (error) {
+        res.status(500).json({
+            error: error.message
+        })
+    } else {
+        next()
+    }
+}
+
 // Sign-up a new user
-router.post('/sign-up', async (req, res) => {
+router.post('/sign-up', uniqueEmailCheck, handleErrors, async (req, res) => {
     let userDetails = {
         email: req.body.email,
         password: req.body.password,
@@ -62,6 +87,7 @@ router.post('/token-refresh', async(req, res) => {
 })
 
 // Update a user
+// TODO: Not working, user not updating
 router.put('/:userID', async (req, res) => {
     let userDetails = {
         userID: req.params.userID,
