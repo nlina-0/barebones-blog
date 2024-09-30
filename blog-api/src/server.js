@@ -5,6 +5,7 @@ import helmet from "helmet"
 import cors from "cors"
 import { dbConnect, dbDisconnect } from "./database.js"
 import rolesRoutes from "./controllers/RoleRoutes.js"
+import usersRoutes from "./controllers/UserRoutes.js"
 
 dotenv.config()
 
@@ -12,7 +13,7 @@ const app = express()
 const HOST = process.env.HOST || "localhost"
 const PORT = process.env.PORT || 3000
 
-// What is helmet?
+// What is helmet? Sets various headers to specific values for the sake of improving security
 app.use(helmet())
 app.use(helmet.permittedCrossDomainPolicies())
 app.use(helmet.referrerPolicy())
@@ -98,12 +99,14 @@ app.get('/databaseDump', async (req, res) => {
 
 // Home route
 app.get('/', (req, res) => {
+    console.log(req.headers)
     res.json({
         message: "Hello world!"
     })
 })
 
 app.use('/roles', rolesRoutes)
+app.use('/users', usersRoutes)
 
 // When no valid route is found, 404 handler route
 app.get('*', (req, res) => {
