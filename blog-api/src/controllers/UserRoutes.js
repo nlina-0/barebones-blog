@@ -15,11 +15,43 @@ import {
     updateUser, 
     deleteUser 
 } from "./UserFunctions.js"
+import jwt from "jsonwebtoken"
+import { Role } from "../models/RoleModels.js"
 
 const router = Router()
 
 // --------------------------------------
 // ----- Middleware
+
+// Make sure the JWT available in the headers is valid,
+// and refresh it to keep the JWT usable for longer.
+const verifyJwtHeader = async (req, res, next) => {
+    let rawJwtHeader = req.headers.jwt
+    let jwtRefresh = await verifyUserJWT(rawJwtHeader)
+    req.headers.jwt = jwtRefresh
+
+    // A function that is used to pass control to the next middleware function in the req-res cycle.
+    next()
+}
+
+const verifyJwtRole = async (request, response, next) => {
+    // Verify that the JWT is still valid.
+    let userJwtVerified = jwt.verify(request.headers.jwt,process.env.JWT_SECRET, {complete: true});
+    // Decrypt the encrypted payload.
+    let decryptedJwtPayload = decryptString(userJwtVerified.payload.data);
+    // Parse the decrypted data into an object.
+    let userData = JSON.parse(decryptedJwtPayload);
+    // Because the JWT doesn't include role info, we must find the full user document first:
+    let userDoc = await User.findById(userData.userID).exec();
+    let userRoleName = await Role.findById(userDoc.role).exec();
+    // Attach the role to the request for the backend to use.
+    // Note that the user's role will never be available on the front-end
+    // with this technique.
+    // This means they can't just manipulate the JWT to access admin stuff.
+    console.log("User role is: " + userRoleName.name);
+    request.headers.userRole = userRoleName.name;
+    next();
+}
 
 // Validate user email uniqueness
 const uniqueEmailCheck = async (req, res, next) => {

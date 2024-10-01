@@ -39,6 +39,13 @@ const users = [
         password: null,
         country:"TheBestOne",
         role: null
+    },
+    {
+        username: "userOne",
+        email: "user_test@mail.com",
+        password: null,
+        country: "australia",
+        role: null
     }
 ]
 
@@ -107,7 +114,7 @@ dbConnect(DB_URI).then(() => {
 
     // Iterate through the users array, using for-of to enable async/await 
     for (const user of users) {
-        // Set passwrod of the user
+        // Set password of the user
         user.password = await hashString("password")
         // Randomise role from the roles created and set to user
         user.role = rolesCreated[Math.floor(Math.random() * rolesCreated.length)].id
