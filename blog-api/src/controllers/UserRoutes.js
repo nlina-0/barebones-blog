@@ -34,23 +34,46 @@ const verifyJwtHeader = async (req, res, next) => {
     next()
 }
 
-const verifyJwtRole = async (request, response, next) => {
+const verifyJwtRole = async (req, res, next) => {
     // Verify that the JWT is still valid.
-    let userJwtVerified = jwt.verify(request.headers.jwt,process.env.JWT_SECRET, {complete: true});
+    let userJwtVerified = jwt.verify(req.headers.jwt, process.env.JWT_SECRET, {complete: true})
+
     // Decrypt the encrypted payload.
-    let decryptedJwtPayload = decryptString(userJwtVerified.payload.data);
+    let decryptedJwtPayload = decryptString(userJwtVerified.payload.data)
+
     // Parse the decrypted data into an object.
-    let userData = JSON.parse(decryptedJwtPayload);
+    let userData = JSON.parse(decryptedJwtPayload)
+
     // Because the JWT doesn't include role info, we must find the full user document first:
-    let userDoc = await User.findById(userData.userID).exec();
-    let userRoleName = await Role.findById(userDoc.role).exec();
-    // Attach the role to the request for the backend to use.
+    let userDoc = await User.findById(userData.userID).exec()
+    let userRoleName = await Role.findById(userDoc.role).exec()
+
+    // Attach the role to the req for the backend to use.
     // Note that the user's role will never be available on the front-end
     // with this technique.
     // This means they can't just manipulate the JWT to access admin stuff.
-    console.log("User role is: " + userRoleName.name);
-    request.headers.userRole = userRoleName.name;
-    next();
+    console.log("User role is: " + userRoleName.name)
+    req.headers.userRole = userRoleName.name
+    
+    next()
+}
+
+// The actual authorization middleware.
+// Throw to the error-handling middleware
+// if the user is not authorized.
+// Different middleware can be made for
+// different roles, just like this.
+const onlyAllowAdmins = (req, res, next) => {
+    if (req.headers.userRole == "admin"){
+        next()
+    } else {
+        next(new Error("User not authorized."))
+    }
+}
+
+// Only allow logged in user - for deleting and updating??
+const onlyAllowCurrentUser = (req, res, next) => {
+    return
 }
 
 // Validate user email uniqueness
@@ -130,7 +153,7 @@ router.put('/:userID', async (req, res) => {
 })
 
 // Delete a user
-router.delete('/:userID', async (req, res) => {
+router.delete('/:userID', verifyJwtHeader, verifyJwtRole, onlyAllowAdmins, async (req, res) => {
     res.json(await deleteUser(req.params.userID))
 })
 

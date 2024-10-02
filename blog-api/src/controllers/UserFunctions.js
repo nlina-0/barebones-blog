@@ -24,7 +24,7 @@ function encryptString(data) {
 
 // Turn the encrypted data back into a plaintext string.
 function decryptString(data) {
-    decipher = crypto.createDecipheriv(encAlgorithm, encPrivateKey, encIV);
+    decipher = crypto.createDecipheriv(encAlgorithm, encPrivateKey, encIV)
     return decipher.update(data, 'hex', 'utf8') + decipher.final('utf8')
 }
 
