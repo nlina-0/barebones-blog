@@ -94,7 +94,7 @@ router.post('/', async (req, res) => {
 })
 
 // Update a specific post. Only admin or author can update.
-// How to sanitise data?
+// How to sanitise and validate data?
 router.put('/:postID', verifyJwtHeader, verifyJwtRole, onlyAllowAdminOrAuthor, async (req, res) => {
     try {
         console.log("Request body: ", req.body)
@@ -107,11 +107,7 @@ router.put('/:postID', verifyJwtHeader, verifyJwtRole, onlyAllowAdminOrAuthor, a
             }
         }
 
-        console.log(postDetails)
-
-        const updatedPost = await updatePost(postDetails)
-        
-        res.json(updatedPost)
+        res.json(await updatePost(postDetails))
     } catch (error) {
         res.status(500).json({ error: "Failed to update post"})
     }
