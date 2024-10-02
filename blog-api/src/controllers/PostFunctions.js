@@ -23,7 +23,13 @@ async function createPost(postDetails) {
 // Update post
 async function updatePost(postDetails) {
     // Find user, update it, return the updated user data.
-    return await Post.findByIdAndUpdate(postDetails.postID, postDetails.updatedData, {returnDocument: 'after'}).exec()
+    try {
+        return await Post.findByIdAndUpdate(postDetails.postID, postDetails.updatedData, { new: true }).exec()
+    } catch (error) {
+        console.error("Error updating post: ", error)
+        throw error
+    }
+    
 }
 
 // Delete post
