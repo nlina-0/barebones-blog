@@ -7,9 +7,9 @@ function NavBar() {
         
             <nav class="navbar" role="navigation" aria-label="main navigation">
                 <div class="navbar-brand">
-                    <a class="navbar-item">
+                    <Link class="navbar-item" to="/">
                     BLOG
-                    </a>
+                    </Link>
                 </div>
 
                 <div id="navbarBasicExample" class="navbar-menu">
@@ -19,10 +19,10 @@ function NavBar() {
                         </Link>
 
                         <Link class="navbar-item" to="/category">
-                        Categories
+                        New Entry
                         </Link>
 
-                        <div class="navbar-item has-dropdown is-hoverable">
+                        {/* <div class="navbar-item has-dropdown is-hoverable">
                             <a class="navbar-link">
                             More
                             </a>
@@ -42,10 +42,10 @@ function NavBar() {
                                     Report an issue
                                 </a>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
 
-                    <div class="navbar-end">
+                    {/* <div class="navbar-end">
                         <div class="navbar-item">
                             <div class="buttons">
                                 <a class="button is-primary">
@@ -56,7 +56,7 @@ function NavBar() {
                                 </a>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </nav>
 
