@@ -25,11 +25,13 @@ app.use(helmet.contentSecurityPolicy({
 }))
 
 // CORS
+// TODO: Origin restriction?
 var corsOptions = {
     origin: ["http://localhost:5000"],
     optionSuccessStatus: 200
 }
-app.use(cors(corsOptions))
+// Add corsOption to cors() func
+app.use(cors())
 
 // API-friendly request data formatting
 app.use(express.json())

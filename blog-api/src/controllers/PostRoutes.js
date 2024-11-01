@@ -64,12 +64,17 @@ const onlyAllowAdminOrAuthor = async (req, res, next) => {
 
 // Show all posts
 router.get('/', async (req, res) => {
-    let allPosts = await getAllPosts()
+    // let allPosts = await getAllPosts()
 
-    res.json({
-        postsCount: allPosts.length,
-        postsArray: allPosts
-    })
+    // res.json({
+    //     // postsCount: allPosts.length,
+    //     postsArray: allPosts
+    // })
+    try {
+        res.status(201).send(await Post.find())
+    } catch (err) {
+        res.status(500).json({ message: err.message })
+    }
 })
 
 // Show posts by specific user

@@ -159,12 +159,17 @@ router.delete('/:userID', verifyJwtHeader, verifyJwtRole, onlyAllowAdmins, async
 
 // List all users
 router.get('/', async (req, res) => {
-    let allUsers = await getAllUsers()
+    // let allUsers = await getAllUsers()
 
-    res.json({
-        userCount: allUsers.length,
-        usersArray: allUsers
-    })
+    // res.json({
+    //     userCount: allUsers.length,
+    //     usersArray: allUsers
+    // })
+    try {
+        res.status(201).send(await User.find())
+    } catch (err) {
+        res.status(500).json({ message: err.message })
+    }
 })
 
 // Show a specific user
